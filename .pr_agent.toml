@@ -1,26 +1,71 @@
+# ==================== ГЛОБАЛЬНЫЕ НАСТРОЙКИ ====================
 [pr_agent]
 model = "gpt-5.4"
-# ВКЛЮЧАЕМ АГЕНТА НА ПОЛНУЮ
 agentic_mode = true
 
+# ==================== GITHUB APP ====================
 [github_app]
-# Список команд, которые ОН ОБЯЗАН СЛУШАТЬ
 pr_commands = [
-    "/review",
-    "/describe",
+    "/agentic_review",
+    "/agentic_describe",
     "/improve",
-    "/ask",
-    "/agentic_improve"
+    "/ask"
 ]
-# РАЗРЕШАЕМ ЕМУ ПИСАТЬ В КОД
 handle_pr_actions = ["created", "opened", "reopened", "labeled"]
+handle_push_trigger = true
+push_commands = ["/agentic_review"]
 
-[pr_improve]
-# Самый важный флаг, чтобы он перестал просто болтать
-publish_output_to_code = true
-extended_mode = true
-# Заставляем его делать прямое предложение (suggestion) в коде
+# ==================== REVIEW AGENT (бывший pr_review) ====================
+[review_agent]
+enabled = true
+publish_output = true
+persistent_comment = true
+comments_location_policy = "both"
+inline_comments_severity_threshold = 2
+demand_self_review = false
+approve_pr_on_self_review = false
+extra_instructions = """
+Ты — Темный Волшебник кода. Твоя задача — НЕ просто советовать, а ПРЕДЛАГАТЬ конкретные изменения.
+Если видишь проблему — сразу давай исправленный код как suggestion.
+Если просят создать файл — создавай его как commitable suggestion.
+Тон: прямой, технический, без воды. Можно использовать неформальный стиль.
+Отвечай на русском языке, если вопрос на русском.
+"""
+
+# ==================== CODE SUGGESTIONS (бывший pr_improve) ====================
+[pr_code_suggestions]
+commitable_code_suggestions = true
 inline_suggestions = true
+extended_mode = true
+suggestions_depth = "exhaustive"
+enable_chat_in_code_suggestions = true
+persistent_comment = true
+apply_suggestions_checkbox = true
+extra_instructions = """
+Предлагай только рабочие, готовые к коммиту изменения.
+Каждый suggestion должен быть полным и применимым одной кнопкой.
+"""
 
-[pr_review]
-extra_instructions = "Ты — Темный Волшебник. Твоя задача — НЕ советовать, а ВНОСИТЬ изменения. Если я прошу создать файл — СОЗДАВАЙ ЕГО как suggestion или коммит. Используй мексиканский сленг, cabrón."
+# ==================== PR DESCRIPTION ====================
+[pr_description]
+publish_labels = true
+enable_pr_diagram = true
+add_original_user_description = true
+final_update_message = true
+
+# ==================== UX / ОТОБРАЖЕНИЕ ====================
+[review_agent_ux]
+finding_overflow_count = 5
+resolved_overflow_count = 3
+expand_description = true
+expand_code = true
+expand_relevance = false
+expand_evidence = false
+expand_prompt = true
+
+# ==================== ИГНОРЫ ====================
+[config]
+ignore_pr_title = ["^\\[Auto\\]", "^Auto", "^WIP"]
+ignore_pr_authors = ["dependabot[bot]", "github-actions[bot]"]
+ignore_language_framework = ["protobuf", "generated"]
+response_language = "ru-RU"
