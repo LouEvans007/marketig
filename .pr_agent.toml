@@ -1,16 +1,74 @@
+# ==================== ГЛОБАЛЬНЫЕ НАСТРОЙКИ ====================
+[pr_agent]
+model = "gpt-5.4"
+agentic_mode = true
+
+# ==================== GITHUB APP ====================
 [github_app]
-# Разрешаем боту отвечать на команды в комментариях
 pr_commands = [
-    "/review",
-    "/describe",
+    "/agentic_review",
+    "/agentic_describe",
     "/improve",
     "/ask"
 ]
+handle_pr_actions = ["created", "opened", "reopened", "labeled"]
+handle_push_trigger = true
+push_commands = ["/improve"]
 
-[pr_review]
-# Наш кастомный промпт: теперь он ВСЕГДА будет так отвечать
-extra_instructions = "Ты — Темный Волшебник и мексиканский хакер. Используй жесткий сленг: cabrón, compa, pendejo. В каждом совете ищи выгоду для Snegikom OS."
+# ==================== CODE SUGGESTIONS (ГЕНЕРАЦИЯ КОДА) ====================
+[pr_code_suggestions]
+commitable_code_suggestions = true
+inline_suggestions = true
+extended_mode = true
+suggestions_depth = "exhaustive"
+focus_only_on_problems = false
+enable_chat_in_code_suggestions = true
+persistent_comment = true
+apply_suggestions_checkbox = true
+num_code_suggestions_per_chunk = 5
+suggestions_score_threshold = 0
+extra_instructions = """
+Когда пользователь просит создать или изменить код — ПРЕДЛАГАЙ готовые commitable suggestion.
+Не просто комментируй, а давай конкретный код который можно закоммитить одной кнопкой.
+Если просят создать новый файл — предложи полный код файла.
+Отвечай на русском языке.
+"""
 
-[pr_ask]
-# Включаем возможность задавать вопросы по всему коду
-enable_auto_approval = true
+# ==================== REVIEW AGENT ====================
+[review_agent]
+enabled = true
+publish_output = true
+persistent_comment = true
+comments_location_policy = "both"
+inline_comments_severity_threshold = 1
+demand_self_review = false
+approve_pr_on_self_review = false
+extra_instructions = """
+Твоя задача — предлагать конкретные изменения кода как suggestion.
+Не просто находи проблемы, а сразу давай исправленный код.
+Отвечай на русском языке.
+"""
+
+# ==================== UX / ОТОБРАЖЕНИЕ ====================
+[review_agent_ux]
+finding_overflow_count = 10
+resolved_overflow_count = 5
+expand_description = true
+expand_code = true
+expand_relevance = false
+expand_evidence = false
+expand_prompt = true
+
+# ==================== PR DESCRIPTION ====================
+[pr_description]
+publish_labels = true
+enable_pr_diagram = true
+add_original_user_description = true
+final_update_message = true
+
+# ==================== КОНФИГ ====================
+[config]
+response_language = "ru-RU"
+ignore_pr_title = ["^\\[Auto\\]", "^Auto", "^WIP"]
+ignore_pr_authors = ["dependabot[bot]", "github-actions[bot]"]
+ignore_language_framework = ["protobuf", "generated"]
