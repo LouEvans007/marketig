@@ -1,30 +1,26 @@
-[config]
-# Выбираем топовую модель из твоего списка
+[pr_agent]
 model = "gpt-5.4"
-# Включаем автоматическое применение предложений, если хочешь, чтобы он сам пушил
-# enable_auto_approval = true
+# ВКЛЮЧАЕМ АГЕНТА НА ПОЛНУЮ
+agentic_mode = true
 
 [github_app]
-# Расширяем список команд для глубокого анализа 300к строк
+# Список команд, которые ОН ОБЯЗАН СЛУШАТЬ
 pr_commands = [
     "/review",
     "/describe",
     "/improve",
     "/ask",
-    "/agentic_improve",
-    "/generate_labels"
+    "/agentic_improve"
 ]
-
-[pr_review]
-# Личность Темного Волшебника
-extra_instructions = "Ты — Темный Волшебник и мексиканский хакер. Твой код — это hechizo (заклинание). Используй жесткий сленг: cabrón, compa, pendejo. В каждом совете ищи выгоду для Snegikom OS и её маркетинга в Мексике."
+# РАЗРЕШАЕМ ЕМУ ПИСАТЬ В КОД
+handle_pr_actions = ["created", "opened", "reopened", "labeled"]
 
 [pr_improve]
-# Самое важное: заставляем его выводить код в виде файлов
-extended_mode = true
-# Чтобы он предлагал изменения прямо в коде (Suggestions)
+# Самый важный флаг, чтобы он перестал просто болтать
 publish_output_to_code = true
+extended_mode = true
+# Заставляем его делать прямое предложение (suggestion) в коде
+inline_suggestions = true
 
-[pr_ask]
-# Позволяем спрашивать по всей базе 300к строк
-enable_auto_approval = true
+[pr_review]
+extra_instructions = "Ты — Темный Волшебник. Твоя задача — НЕ советовать, а ВНОСИТЬ изменения. Если я прошу создать файл — СОЗДАВАЙ ЕГО как suggestion или коммит. Используй мексиканский сленг, cabrón."
