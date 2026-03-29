@@ -1,19 +1,30 @@
 # ==================== CORE ====================
 [config]
-model = "openai/openai/gpt-5.4"
-model_reasoning = "openai/openai/gpt-5.4"
-model_turbo = "openai/openai/gpt-5.4"
-second_model_for_exhaustive_mode = "openai/openai/gpt-5.4"
-fallback_models = ["openai/openai/gpt-5.4"]
+model = "openai/gpt-5.4"
+model_reasoning = "openai/gpt-5.4"
+model_turbo = "openai/gpt-5.2"
+second_model_for_exhaustive_mode = "openai/gpt-5.4"
+fallback_models = ["openai/gpt-5.2", "anthropic/claude-opus-4-6"]
 response_language = "ru-RU"
 temperature = 0.2
+max_model_tokens = 128000
+ai_timeout = 180
+verbosity_level = 0
+debug_mode = false
+publish_output = true
+publish_logs = false
+use_wiki_settings_file = true
+use_repo_settings_file = true
+use_global_settings_file = true
 ignore_pr_title = ["^\\$Auto\\$", "^Auto", "^WIP"]
 ignore_pr_authors = ["dependabot[bot]", "github-actions[bot]"]
 ignore_language_framework = ["protobuf", "generated"]
+git_provider = "github"
+ai_handler = "litellm"
 
 # ==================== PR AGENT ====================
 [pr_agent]
-model = "openai/openai/gpt-5.4"
+model = "openai/gpt-5.4"
 agentic_mode = true
 
 # ==================== GITHUB APP ====================
@@ -22,6 +33,22 @@ pr_commands = ["/agentic_review", "/agentic_describe", "/improve", "/ask"]
 handle_pr_actions = ["created", "opened", "reopened", "labeled"]
 handle_push_trigger = true
 push_commands = ["/improve"]
+ignore_bot_pr = true
+feedback_on_draft_pr = false
+
+# ==================== PR REVIEWER ====================
+[pr_reviewer]
+require_score_review = false
+require_tests_review = true
+require_estimate_effort_to_review = true
+require_security_review = true
+require_ticket_analysis_review = true
+persistent_comment = true
+final_update_message = true
+enable_help_text = false
+extra_instructions = """
+Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
+"""
 
 # ==================== CODE SUGGESTIONS ====================
 [pr_code_suggestions]
@@ -35,10 +62,18 @@ persistent_comment = true
 apply_suggestions_checkbox = true
 num_code_suggestions_per_chunk = 5
 suggestions_score_threshold = 0
+max_number_of_calls = 3
+enable_more_suggestions_checkbox = true
+high_level_suggestions_enabled = true
+simplify_response = true
 extra_instructions = """
 Когда пользователь просит создать или изменить код — предлагай готовые commitable suggestion.
 Если пользователь просит новый файл — приводи полный код файла.
 Отвечай на русском языке.
+
+======
+
+In addition, Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
 """
 
 # ==================== REVIEW AGENT ====================
@@ -46,16 +81,32 @@ extra_instructions = """
 enabled = true
 publish_output = true
 persistent_comment = true
+persistent_comment_notification = true
 comments_location_policy = "both"
 inline_comments_severity_threshold = 1
 demand_self_review = false
 approve_pr_on_self_review = false
-llm_model = "openai/openai/gpt-5.4"
-conversion_llm_model = "openai/openai/gpt-5.4"
-ensemble_models = ["openai/openai/gpt-5.4"]
+enable_incremental_review = true
+enable_issues_agent = true
+enable_compliance_agent = true
+enable_spec_agent = true
+enable_deduplication = true
+rules_enabled = true
+requirements_gap_enabled = true
+llm_model = "openai/gpt-5.4"
+conversion_llm_model = "openai/gpt-5.4"
+ensemble_models = ["openai/gpt-5.4"]
+context_collector_llm_model = "openai/gpt-4.2"
+feedback_tool_llm_model = "openai/gpt-4.2"
+llm_call_timeout = 180
+max_llm_calls = 100
 extra_instructions = """
 Твоя задача — не только находить проблемы, но и предлагать конкретные исправления.
 Отвечай на русском языке.
+
+======
+
+In addition, Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
 """
 
 # ==================== UX ====================
@@ -73,4 +124,76 @@ expand_prompt = true
 publish_labels = true
 enable_pr_diagram = true
 add_original_user_description = true
+generate_ai_title = false
 final_update_message = true
+enable_help_text = false
+enable_semantic_files_types = true
+collapsible_file_list = "adaptive"
+include_generated_by_header = true
+enable_large_pr_handling = true
+max_ai_calls = 4
+extra_instructions = """
+Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
+"""
+
+# ==================== PR QUESTIONS (/ask) ====================
+[pr_questions]
+enable_help_text = false
+use_conversation_history = true
+# ⚠️ /ask использует config.model по умолчанию — поэтому важно исправить [config] выше!
+
+# ==================== PR COMPLIANCE ====================
+[pr_compliance]
+enabled = true
+enable_rules_platform = true
+enable_security_section = true
+enable_ticket_section = true
+persistent_comment = true
+enable_help_text = false
+extra_instructions = """
+Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
+"""
+
+# ==================== PR TEST ====================
+[pr_test]
+enable = true
+num_tests = 3
+avoid_mocks = true
+enable_help_text = false
+extra_instructions = """
+Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
+"""
+
+# ==================== PR ADD DOCS ====================
+[pr_add_docs]
+docs_style = "Sphinx"
+enable_help_text = false
+extra_instructions = """
+Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
+"""
+
+# ==================== PR UPDATE CHANGELOG ====================
+[pr_update_changelog]
+push_changelog_changes = false
+add_pr_link = true
+skip_ci_on_push = true
+extra_instructions = """
+Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
+"""
+
+# ==================== BEST PRACTICES ====================
+[best_practices]
+enabled = true
+enable_global_best_practices = true
+allow_repo_best_practices = true
+max_lines_allowed = 2000
+
+[auto_best_practices]
+enable_auto_best_practices = true
+utilize_auto_best_practices = true
+min_suggestions_to_auto_best_practices = 10
+number_of_days_to_update = 30
+max_patterns = 5
+extra_instructions = """
+Your response MUST be written in the language corresponding to locale code: 'ru-RU'. This is crucial.
+"""
