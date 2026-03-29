@@ -1,21 +1,29 @@
-# ==================== ГЛОБАЛЬНЫЕ НАСТРОЙКИ ====================
+# ==================== CORE ====================
+[config]
+model = "openai/openai/gpt-5.4"
+model_reasoning = "openai/openai/gpt-5.4"
+model_turbo = "openai/openai/gpt-5.4"
+second_model_for_exhaustive_mode = "openai/openai/gpt-5.4"
+fallback_models = ["openai/openai/gpt-5.4"]
+response_language = "ru-RU"
+temperature = 0.2
+ignore_pr_title = ["^\\$Auto\\$", "^Auto", "^WIP"]
+ignore_pr_authors = ["dependabot[bot]", "github-actions[bot]"]
+ignore_language_framework = ["protobuf", "generated"]
+
+# ==================== PR AGENT ====================
 [pr_agent]
-model = "gpt-5.4"
+model = "openai/openai/gpt-5.4"
 agentic_mode = true
 
 # ==================== GITHUB APP ====================
 [github_app]
-pr_commands = [
-    "/agentic_review",
-    "/agentic_describe",
-    "/improve",
-    "/ask"
-]
+pr_commands = ["/agentic_review", "/agentic_describe", "/improve", "/ask"]
 handle_pr_actions = ["created", "opened", "reopened", "labeled"]
 handle_push_trigger = true
 push_commands = ["/improve"]
 
-# ==================== CODE SUGGESTIONS (ГЕНЕРАЦИЯ КОДА) ====================
+# ==================== CODE SUGGESTIONS ====================
 [pr_code_suggestions]
 commitable_code_suggestions = true
 inline_suggestions = true
@@ -28,9 +36,8 @@ apply_suggestions_checkbox = true
 num_code_suggestions_per_chunk = 5
 suggestions_score_threshold = 0
 extra_instructions = """
-Когда пользователь просит создать или изменить код — ПРЕДЛАГАЙ готовые commitable suggestion.
-Не просто комментируй, а давай конкретный код который можно закоммитить одной кнопкой.
-Если просят создать новый файл — предложи полный код файла.
+Когда пользователь просит создать или изменить код — предлагай готовые commitable suggestion.
+Если пользователь просит новый файл — приводи полный код файла.
 Отвечай на русском языке.
 """
 
@@ -43,13 +50,15 @@ comments_location_policy = "both"
 inline_comments_severity_threshold = 1
 demand_self_review = false
 approve_pr_on_self_review = false
+llm_model = "openai/openai/gpt-5.4"
+conversion_llm_model = "openai/openai/gpt-5.4"
+ensemble_models = ["openai/openai/gpt-5.4"]
 extra_instructions = """
-Твоя задача — предлагать конкретные изменения кода как suggestion.
-Не просто находи проблемы, а сразу давай исправленный код.
+Твоя задача — не только находить проблемы, но и предлагать конкретные исправления.
 Отвечай на русском языке.
 """
 
-# ==================== UX / ОТОБРАЖЕНИЕ ====================
+# ==================== UX ====================
 [review_agent_ux]
 finding_overflow_count = 10
 resolved_overflow_count = 5
@@ -65,10 +74,3 @@ publish_labels = true
 enable_pr_diagram = true
 add_original_user_description = true
 final_update_message = true
-
-# ==================== КОНФИГ ====================
-[config]
-response_language = "ru-RU"
-ignore_pr_title = ["^\\[Auto\\]", "^Auto", "^WIP"]
-ignore_pr_authors = ["dependabot[bot]", "github-actions[bot]"]
-ignore_language_framework = ["protobuf", "generated"]
